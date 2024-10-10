@@ -1,0 +1,89 @@
+unit ucadastropadrao;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls;
+
+type
+  TFrmCadastroPadrao = class(TForm)
+    PnlFundo: TPanel;
+    PnlDados: TPanel;
+    GrbDados: TGroupBox;
+    PnlGrid: TPanel;
+    GrbGrid: TGroupBox;
+    PnlTopo: TPanel;
+    BtnFechar: TSpeedButton;
+    PnlNovo: TPanel;
+    PnlAlterar: TPanel;
+    PnlExcluir: TPanel;
+    BtnNovo: TSpeedButton;
+    BtnAlterar: TSpeedButton;
+    BtnExcluir: TSpeedButton;
+    PnlCancelar: TPanel;
+    BtnCancelar: TSpeedButton;
+    PnlGravar: TPanel;
+    BtnGravar: TSpeedButton;
+    Label2: TLabel;
+    procedure BtnFecharClick(Sender: TObject);
+    procedure BtnSairClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+  private
+    procedure EditEnter(Sender: TObject);
+    procedure EditExit(Sender: TObject);
+    procedure ApplyEditFocusEvents;
+  public
+
+  end;
+
+var
+  FrmCadastroPadrao: TFrmCadastroPadrao;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TFrmCadastroPadrao.FormCreate(Sender: TObject);
+begin
+  ApplyEditFocusEvents;  // Aplica eventos para todos os TEdits
+end;
+
+procedure TFrmCadastroPadrao.ApplyEditFocusEvents;
+var i: Integer;
+begin
+  // Itera por todos os componentes do formulário
+  for i := 0 to Self.ComponentCount - 1 do
+  begin
+    // Verifica se o componente é um TEdit
+    if (Components[i] is TEdit) then
+    begin
+      // Associa dinamicamente os eventos OnEnter e OnExit
+      (Components[i] as TEdit).OnEnter := EditEnter;
+      (Components[i] as TEdit).OnExit := EditExit;
+    end;
+  end;
+end;
+
+procedure TFrmCadastroPadrao.EditEnter(Sender: TObject);
+begin
+  (Sender as TEdit).Color := $00D2FFFF;
+end;
+
+procedure TFrmCadastroPadrao.EditExit(Sender: TObject);
+begin
+  (Sender as TEdit).Color := clWindow;
+end;
+
+procedure TFrmCadastroPadrao.BtnFecharClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFrmCadastroPadrao.BtnSairClick(Sender: TObject);
+begin
+  Close;
+end;
+
+end.

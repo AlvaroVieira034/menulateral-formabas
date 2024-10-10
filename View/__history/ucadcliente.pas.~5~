@@ -1,0 +1,63 @@
+unit ucadcliente;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ucadastropadrao, Vcl.StdCtrls,
+  Vcl.Buttons, Vcl.ExtCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids;
+
+type
+  TFrmCadCliente = class(TFrmCadastroPadrao)
+    Label3: TLabel;
+    Label1: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    EdtCep: TEdit;
+    EdtEndereco: TEdit;
+    EdtComplemento: TEdit;
+    EdtBairro: TEdit;
+    EdtCidade: TEdit;
+    EdtUF: TEdit;
+    EdtCodigoCliente: TEdit;
+    Label8: TLabel;
+    EdtCpfCnpj: TEdit;
+    Label9: TLabel;
+    EdtNome: TEdit;
+    Label10: TLabel;
+    EdtDataNascimento: TEdit;
+    Label11: TLabel;
+    Label12: TLabel;
+    BtnPesquisar: TSpeedButton;
+    EdtPesquisar: TEdit;
+    CbxFiltro: TComboBox;
+    BtnPesquisarCep: TSpeedButton;
+    DBGrid1: TDBGrid;
+    procedure EditEnter;
+    procedure EditExit;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmCadCliente: TFrmCadCliente;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmCadCliente.EditEnter;
+begin
+  (Sender as TEdit).Color := $00D2FFFF;
+end;
+
+procedure TFrmCadCliente.EditExit;
+begin
+  (Sender as TEdit).Color := clWindow;
+end;
+
+end.

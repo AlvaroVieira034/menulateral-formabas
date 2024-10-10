@@ -1,0 +1,197 @@
+unit ucadproduto;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ucadastropadrao, Vcl.StdCtrls,  Vcl.Buttons, Vcl.ExtCtrls,
+  Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error,
+  FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
+  FireDAC.Phys, FireDAC.Phys.MSSQL, FireDAC.Phys.MSSQLDef, FireDAC.VCLUI.Wait, FireDAC.Stan.Param,
+  FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  conexao.model, produto.model, produto.controller;
+
+type
+  TFrmCadProduto = class(TFrmCadastroPadrao)
+    Label1: TLabel;
+    Label3: TLabel;
+    Label6: TLabel;
+    EdtPrecoUnitario: TEdit;
+    EdtCodProduto: TEdit;
+    EdtDescricao: TEdit;
+    DBGridProdutos: TDBGrid;
+    Label4: TLabel;
+    BtnPesquisar: TSpeedButton;
+    EdtPesquisar: TEdit;
+    CbxFiltro: TComboBox;
+    procedure FormCreate(Sender: TObject);
+  private
+    TblProdutos: TFDQuery;
+    QryProdutos: TFDQuery;
+    QryTemp: TFDQuery;
+    DsProdutos: TDataSource;
+    TransacaoProdutos: TFDTransaction;
+    FProduto: TProduto;
+    ProdutoController: TProdutoController;
+
+    procedure CriarTabelas;
+    procedure CriarCamposTabelas;
+    procedure PreencherGrid;
+    procedure CarregarCampos;
+    procedure Inserir;
+    procedure Alterar;
+    procedure Excluir;
+    function ValidarDados: Boolean;
+    procedure GravarDados;
+    procedure LimpaCampos(AOperacao: TOperacao);
+    procedure VerificaBotoes(AOperacao: TOperacao);
+    procedure MostrarMensagemErro(AErro: TCampoInvalido);
+  public
+    { Public declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  end;
+
+var
+  FrmCadProduto: TFrmCadProduto;
+
+implementation
+
+{$R *.dfm}
+
+{ TFrmCadProduto }
+
+
+constructor TFrmCadProduto.Create(AOwner: TComponent);
+begin
+  inherited;
+  TransacaoProdutos := TFDTransaction.Create(nil);
+  DsProdutos := TDataSource.Create(nil);
+  TblProdutos := TFDQuery.Create(nil);
+  QryProdutos := TFDQuery.Create(nil);
+  QryTemp := TFDQuery.Create(nil);
+end;
+
+destructor TFrmCadProduto.Destroy;
+begin
+  TransacaoProdutos.Free;
+  DsProdutos.Free;
+  TblProdutos.Free;
+  QryProdutos.Free;
+  QryTemp.Free;
+  inherited;
+
+end;
+
+procedure TFrmCadProduto.FormCreate(Sender: TObject);
+begin
+  inherited;
+  if TConexao.GetInstance.Connection.TestarConexao then
+  begin
+    TConexao.GetInstance.Connection.InciarTransacao;
+    CriarTabelas();
+    CriarCamposTabelas();
+    FProduto := TProduto.Create;
+    ProdutoController := TProdutoController.Create;
+    FOperacao := opInicio;
+    SetLength(ValoresOriginais, 3);
+  end
+  else
+  begin
+    ShowMessage('Não foi possível conectar ao banco de dados!');
+    Close;
+  end;
+
+end;
+
+procedure TFrmCadProduto.CriarTabelas;
+begin
+  TransacaoProdutos := TConexao.GetInstance.Connection.CriarTransaction;
+  TblProdutos := TConexao.GetInstance.Connection.CriarQuery;
+  QryProdutos := TConexao.GetInstance.Connection.CriarQuery;
+  QryProdutos.Transaction := TransacaoProdutos;
+  DsProdutos := TConexao.GetInstance.Connection.CriarDataSource;
+  DsProdutos.DataSet := TblProdutos;
+  DBGridProdutos.DataSource := DsProdutos;
+end;
+
+procedure TFrmCadProduto.CriarCamposTabelas;
+var sCampo: string;
+    StringField: TStringField;
+    IntegerField: TIntegerField;
+    DateField: TDateField;
+    FloatField: TFloatField;
+begin
+  // Criando o campo COD_PRODUTO
+  IntegerField := TIntegerField.Create(TblProdutos);
+  IntegerField.FieldName := 'COD_PRODUTO';
+  IntegerField.DataSet := TblProdutos;
+  IntegerField.Name := 'TblProdutosCOD_PRODUTO';
+
+  // Criando o campo NOME_PRODUTO
+  StringField := TStringField.Create(TblProdutos);
+  StringField.FieldName := 'DES_DESCRICAO';
+  StringField.Size := 100;
+  StringField.DataSet := TblProdutos;
+  StringField.Name := 'TblProdutosDES_DESCRICAO';
+
+  // Criando o campo VAL_PRECO
+  FloatField := TFloatField.Create(TblProdutos);
+  FloatField.FieldName := 'VAL_PRECO';
+  FloatField.DataSet := TblProdutos;
+  FloatField.Name := 'TblProdutosVAL_PRECO';
+  FloatField.DisplayFormat := '#,###,##0.00';
+end;
+
+procedure TFrmCadProduto.PreencherGrid;
+begin
+  ProdutoController.PreencherGrid(TblProdutos, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text);
+  GrbGrid.Caption:= 'Produtos cadastrados: ' + InttoStr(DsProdutos.DataSet.RecordCount);
+end;
+
+procedure TFrmCadProduto.CarregarCampos;
+begin
+
+end;
+
+procedure TFrmCadProduto.Inserir;
+begin
+
+end;
+
+procedure TFrmCadProduto.Alterar;
+begin
+
+end;
+
+procedure TFrmCadProduto.Excluir;
+begin
+
+end;
+
+procedure TFrmCadProduto.GravarDados;
+begin
+
+end;
+
+function TFrmCadProduto.ValidarDados: Boolean;
+begin
+
+end;
+
+procedure TFrmCadProduto.MostrarMensagemErro(AErro: TCampoInvalido);
+begin
+
+end;
+
+procedure TFrmCadProduto.LimpaCampos(AOperacao: TOperacao);
+begin
+
+end;
+
+procedure TFrmCadProduto.VerificaBotoes(AOperacao: TOperacao);
+begin
+
+end;
+
+end.

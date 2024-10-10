@@ -1,0 +1,16 @@
+program movVendas;
+
+uses
+  Vcl.Forms,
+  umain in 'View\umain.pas' {FrmMain},
+  ucadastropadrao in 'View\ucadastropadrao.pas' {FrmCadastroPadrao},
+  ucadproduto in 'View\ucadproduto.pas' {FrmCadastroPadrao1};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFrmMain, FrmMain);
+  Application.Run;
+end.

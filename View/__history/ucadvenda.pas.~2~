@@ -1,0 +1,48 @@
+unit ucadvenda;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ucadastropadrao, Data.DB, Vcl.Grids,
+  Vcl.DBGrids, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Buttons, Vcl.ExtCtrls;
+
+type
+  TFrmCadVenda = class(TFrmCadastroPadrao)
+    Label1: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    BtnLimpaCampos: TSpeedButton;
+    BtnPesquisar: TSpeedButton;
+    EdtCodVenda: TEdit;
+    EdtDataVenda: TEdit;
+    EdtTotalVenda: TEdit;
+    EdtCodCliente: TEdit;
+    LcbxNomeCliente: TDBLookupComboBox;
+    BtnInserirItens: TButton;
+    Label10: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    EdtQuantidade: TEdit;
+    EdtPrecoUnit: TEdit;
+    EdtPrecoTotal: TEdit;
+    LCbxProdutos: TDBLookupComboBox;
+    BtnAddItemGrid: TButton;
+    BtnDelItemGrid: TButton;
+    DbGridItensPedido: TDBGrid;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmCadVenda: TFrmCadVenda;
+
+implementation
+
+{$R *.dfm}
+
+end.
