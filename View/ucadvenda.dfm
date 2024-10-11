@@ -30,8 +30,6 @@ object FrmCadVenda: TFrmCadVenda
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 767
-    ExplicitHeight = 532
     object PnlDados: TPanel
       Left = 0
       Top = 24
@@ -40,9 +38,6 @@ object FrmCadVenda: TFrmCadVenda
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 192
-      ExplicitTop = 26
-      ExplicitWidth = 689
       object PnlCancelar: TPanel
         Left = 536
         Top = 10
@@ -232,7 +227,7 @@ object FrmCadVenda: TFrmCadVenda
           Left = 160
           Top = 40
           Width = 74
-          Height = 21
+          Height = 23
           Hint = 
             'Digite o c'#243'digo da venda ou clique no bot'#227'o pesquisar para abrir' +
             ' a janela de pesquisa.'
@@ -246,7 +241,7 @@ object FrmCadVenda: TFrmCadVenda
           Left = 160
           Top = 70
           Width = 74
-          Height = 21
+          Height = 23
           Alignment = taRightJustify
           CharCase = ecUpperCase
           MaxLength = 10
@@ -257,7 +252,7 @@ object FrmCadVenda: TFrmCadVenda
           Left = 160
           Top = 130
           Width = 76
-          Height = 21
+          Height = 23
           Alignment = taRightJustify
           Enabled = False
           TabOrder = 4
@@ -266,7 +261,7 @@ object FrmCadVenda: TFrmCadVenda
           Left = 160
           Top = 100
           Width = 76
-          Height = 21
+          Height = 23
           Alignment = taRightJustify
           TabOrder = 2
           OnChange = EdtCodClienteChange
@@ -357,9 +352,6 @@ object FrmCadVenda: TFrmCadVenda
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitLeft = -1
-      ExplicitTop = 284
-      ExplicitWidth = 672
       object GrbGrid: TGroupBox
         Left = 9
         Top = 0
@@ -530,7 +522,6 @@ object FrmCadVenda: TFrmCadVenda
       Color = clGray
       ParentBackground = False
       TabOrder = 2
-      ExplicitWidth = 767
       DesignSize = (
         631
         24)

@@ -32,8 +32,7 @@ type
     procedure BtnSairClick(Sender: TObject);
     procedure BtnSelecionarClick(Sender: TObject);
     procedure CbxFiltroClick(Sender: TObject);
-    procedure DbGridPedidosKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure DbGridPedidosKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure BtnFecharClick(Sender: TObject);
   private
     TblVendas: TFDQuery;
@@ -47,6 +46,7 @@ type
     procedure PreencherGrid(TblVendas: TFDQuery; APesquisa, ACampo: string);
     procedure CriarTabelas;
     procedure CriarCamposTabelas;
+    procedure AtribuirValoresFormVenda(const AOperacao: string);
 
   end;
 
@@ -101,76 +101,6 @@ begin
   PreencherGrid(TblVendas, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text);
 end;
 
-procedure TFrmPesquisaVendas.DbGridPedidosDblClick(Sender: TObject);
-var FormVenda: TFrmCadVenda;
-    i: Integer;
-begin
-  // Procurar a aba com o formulário de vendas
-  for i := 0 to FrmMain.PageControlMain.PageCount - 1 do
-  begin
-    if FrmMain.PageControlMain.Pages[i].Caption = 'Cadastro de Vendas' then
-    begin
-      // Acessar o formulário armazenado no Tag da aba
-      FormVenda := TFrmCadVenda(FrmMain.PageControlMain.Pages[i].Tag);
-      Break;
-    end;
-  end;
-
-  if Assigned(FormVenda) then
-  begin
-    // Atribuir os valores desejados à instância correta do formulário
-    FormVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
-    FormVenda.pesqVenda := True;
-    FormVenda.FOperacao := opNavegar;
-  end;
-
-  {FrmCadVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
-  FrmCadVenda.pesqVenda := True;
-  FrmCadVenda.FOperacao := opNavegar;}
-
-  BtnSair.Click;
-end;
-
-procedure TFrmPesquisaVendas.DbGridPedidosKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-  begin
-    FrmCadVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
-    FrmCadVenda.pesqVenda := True;
-    FrmCadVenda.FOperacao := opEditar;
-    BtnSair.Click;
-    Key := 0;
-  end;
-end;
-
-procedure TFrmPesquisaVendas.CbxFiltroClick(Sender: TObject);
-begin
-  BtnPesquisar.Click;
-end;
-
-procedure TFrmPesquisaVendas.BtnFecharClick(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure TFrmPesquisaVendas.BtnPesquisarClick(Sender: TObject);
-begin
-  PreencherGrid(TblVendas, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text)
-end;
-
-procedure TFrmPesquisaVendas.PreencherGrid(TblVendas: TFDQuery; APesquisa, ACampo: string);
-begin
-  VendaController.PreencherGrid(TblVendas, APesquisa + '%', ACampo);
-end;
-
-procedure TFrmPesquisaVendas.CriarTabelas;
-begin
-  TblVendas := TConexao.GetInstance.Connection.CriarQuery;
-  DsVendas := TConexao.GetInstance.Connection.CriarDataSource;
-  DsVendas.DataSet := TblVendas;
-  DbGridPedidos.DataSource := DsVendas;
-end;
-
 procedure TFrmPesquisaVendas.CriarCamposTabelas;
 var
   FloatField: TFloatField;
@@ -206,18 +136,93 @@ begin
   FloatField.DisplayFormat := '#,###,##0.00';
 end;
 
+procedure TFrmPesquisaVendas.DbGridPedidosDblClick(Sender: TObject);
+begin
+  AtribuirValoresFormVenda('Navegar');
+  BtnSair.Click;
+end;
+
+procedure TFrmPesquisaVendas.DbGridPedidosKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+  begin
+    AtribuirValoresFormVenda('Editar');
+    BtnSair.Click;
+    Key := 0;
+  end;
+end;
+
+procedure TFrmPesquisaVendas.CbxFiltroClick(Sender: TObject);
+begin
+  BtnPesquisar.Click;
+end;
+
+procedure TFrmPesquisaVendas.BtnFecharClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFrmPesquisaVendas.BtnPesquisarClick(Sender: TObject);
+begin
+  PreencherGrid(TblVendas, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text)
+end;
+
+procedure TFrmPesquisaVendas.PreencherGrid(TblVendas: TFDQuery; APesquisa, ACampo: string);
+begin
+  VendaController.PreencherGrid(TblVendas, APesquisa + '%', ACampo);
+end;
+
+procedure TFrmPesquisaVendas.CriarTabelas;
+begin
+  TblVendas := TConexao.GetInstance.Connection.CriarQuery;
+  DsVendas := TConexao.GetInstance.Connection.CriarDataSource;
+  DsVendas.DataSet := TblVendas;
+  DbGridPedidos.DataSource := DsVendas;
+end;
+
 procedure TFrmPesquisaVendas.BtnSelecionarClick(Sender: TObject);
 begin
-  FrmCadVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
-  FrmCadVenda.pesqVenda := True;
-  FrmCadVenda.FOperacao := opNavegar;
+  AtribuirValoresFormVenda('Navegar');
+  //FrmCadVenda.FOperacao := opNavegar;
   BtnSair.Click;
+end;
+
+procedure TFrmPesquisaVendas.AtribuirValoresFormVenda(const AOperacao: string);
+var
+  FormVenda: TFrmCadVenda;
+  i: Integer;
+begin
+  // Procurar a aba com o formulário de vendas
+  for i := 0 to FrmMain.PageControlMain.PageCount - 1 do
+  begin
+    if FrmMain.PageControlMain.Pages[i].Caption = 'Vendas' then
+    begin
+      // Acessar o formulário armazenado no Tag da aba
+      FormVenda := TFrmCadVenda(FrmMain.PageControlMain.Pages[i].Tag);
+      Break;
+    end;
+  end;
+
+  if Assigned(FormVenda) then
+  begin
+    // Atribuir os valores desejados à instância correta do formulário
+    FormVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
+    FormVenda.pesqVenda := True;
+    if AOperacao = 'Navegar' then
+      FormVenda.FOperacao := opNavegar; // Atribui a operação passada como parâmetro
+
+    if AOperacao = 'Editar' then
+      FormVenda.FOperacao := opEditar;
+  end;
+
+  // Ao sair, utilize a função para fechar o formulário
+  BtnSair.Click; // Fecha o formulário de pesquisa
 end;
 
 procedure TFrmPesquisaVendas.BtnSairClick(Sender: TObject);
 begin
-  FVenda.Free;
-  VendaController.Free;
+  //FVenda.Free;
+  //VendaController.Free;
   Close;
 end;
 

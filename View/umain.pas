@@ -73,18 +73,22 @@ begin
 end;
 
 procedure TFrmMain.FormCloseHandler(Sender: TObject; var Action: TCloseAction);
-var i: Integer;
-    Form: TForm;
+var
+  Form: TForm;
+  i: Integer;
 begin
-  // Identificar a aba correspondente ao formulário fechado
   Form := TForm(Sender);
+
+  // Verificar se o formulário é válido
+  if not Assigned(Form) then
+    Exit;
+
+  // Identificar a aba correspondente ao formulário fechado
   for i := 0 to PageControlMain.PageCount - 1 do
   begin
-    // Verificar se a aba ainda existe e se está associada corretamente ao formulário
     if Assigned(PageControlMain.Pages[i]) and (PageControlMain.Pages[i].Tag = Integer(Form)) then
     begin
-      // Fechar a aba
-      PageControlMain.Pages[i].Free;
+      PageControlMain.Pages[i].Free; // Liberar a aba
       Break;
     end;
   end;
@@ -174,6 +178,13 @@ var
   NewForm: TForm;
   i: Integer;
 begin
+  // Verificar se PageControlMain foi inicializado
+  if not Assigned(PageControlMain) then
+  begin
+    ShowMessage('PageControlMain não está inicializado.');
+    Exit;
+  end;
+
   // Verificar se a aba já existe
   for i := 0 to PageControlMain.PageCount - 1 do
   begin
@@ -186,34 +197,48 @@ begin
 
   // Criar uma nova aba
   TabSheet := TTabSheet.Create(PageControlMain);
-  TabSheet.PageControl := PageControlMain;
-  TabSheet.Caption := ATabName;
+  try
+    TabSheet.PageControl := PageControlMain;
+    TabSheet.Caption := ATabName;
 
-  // Instanciar o formulário e associá-lo à nova aba
-  NewForm := AFormClass.Create(TabSheet);
-  NewForm.Parent := TabSheet;
-  NewForm.Align := alClient;
-  NewForm.BorderStyle := bsNone;
-  NewForm.Show;
+    // Instanciar o formulário
+    NewForm := AFormClass.Create(TabSheet);
+    try
+      NewForm.Parent := TabSheet;
+      NewForm.Align := alClient;
+      NewForm.BorderStyle := bsNone;
+      NewForm.Show;
 
-  // Armazenar o formulário no Tag da aba
-  TabSheet.Tag := Integer(NewForm); // Guardar a instância do formulário
+      // Armazenar o formulário no Tag da aba
+      TabSheet.Tag := Integer(NewForm);
 
-  // Tornar a aba recém-criada ativa
-  PageControlMain.ActivePage := TabSheet;
+      // Associar o evento OnClose para remover a aba
+      NewForm.OnClose := FormCloseHandler;
+    except
+      NewForm.Free; // Liberar o formulário se ocorrer um erro
+      raise; // Relançar a exceção para controle externo
+    end;
+
+    // Tornar a aba recém-criada ativa
+    PageControlMain.ActivePage := TabSheet;
+  except
+    TabSheet.Free; // Liberar a aba se houver erro
+    raise; // Relançar a exceção para controle externo
+  end;
 end;
 
 procedure TFrmMain.FecharFormulariosAbertos;
-var i: Integer;
-    Form: TForm;
-    TabSheet: TTabSheet;
+var
+  i: Integer;
+  Form: TForm;
+  TabSheet: TTabSheet;
 begin
   // Fechar as abas de trás para frente
   for i := PageControlMain.PageCount - 1 downto 0 do
   begin
     TabSheet := PageControlMain.Pages[i];
 
-    // Verificar se a aba existe
+    // Verificar se a aba existe e se há um formulário associado
     if Assigned(TabSheet) and (TabSheet.Tag <> 0) then
     begin
       Form := TForm(TabSheet.Tag);  // Obter o formulário associado
@@ -221,19 +246,15 @@ begin
       // Verificar se o formulário ainda está válido
       if Assigned(Form) then
       begin
-        // Fechar o formulário (sem forçar a destruição)
+        // Fechar o formulário e verificar se pode ser fechado
         if not Form.CloseQuery then
-        begin
-          Exit; // Se o formulário não puder ser fechado, interromper o processo
-        end;
+          Exit;
 
-        Form.Hide;  // Ocultar o formulário antes de liberar
-        Form.Release;  // Usar Release para liberar o formulário de forma segura
+        Form.Release;  // Liberar o formulário de forma segura
       end;
 
-      // Desanexar a aba do controle de abas
-      TabSheet.PageControl := nil;
-      TabSheet.Free;  // Liberar a aba
+      // Remover a aba da visualização
+      PageControlMain.Pages[i].Free;  // Liberar a aba
     end;
   end;
 end;
