@@ -65,10 +65,7 @@ end;
 
 procedure TFrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // Fechar todos os formulários abertos nas abas
   FecharFormulariosAbertos;
-
-  // Continuar com o fechamento da aplicação
   Action := caFree;
 end;
 
@@ -127,6 +124,16 @@ begin
   BExpandido := not BExpandido;
 end;
 
+procedure TFrmMain.ContrairMenu;
+begin
+  PnlLateral.Width := 50;
+end;
+
+procedure TFrmMain.ExpandirMenu;
+begin
+  PnlLateral.Width := 137;
+end;
+
 procedure TFrmMain.BtnMiniClick(Sender: TObject);
 begin
   FrmMain.WindowState := wsMinimized;
@@ -148,28 +155,6 @@ procedure TFrmMain.BtnVendasClick(Sender: TObject);
 begin
   ContrairMenu();
   OpenTab(TFrmCadVenda, 'Vendas');
-
-  {if not Assigned(FrmCadVenda) then
-    FrmCadVenda := TFrmCadVenda.Create(Self);
-
-  FrmCadVenda.ShowModal;
-  FrmCadVenda.Free;
-  FrmCadVenda := nil;}
-end;
-
-procedure TFrmMain.ContrairMenu;
-begin
-  PnlLateral.Width := 50;
-end;
-
-procedure TFrmMain.ExpandirMenu;
-begin
-  PnlLateral.Width := 137;
-end;
-
-procedure TFrmMain.BtnFecharClick(Sender: TObject);
-begin
-  Close;
 end;
 
 procedure TFrmMain.OpenTab(const AFormClass: TFormClass; const ATabName: string);
@@ -254,9 +239,15 @@ begin
       end;
 
       // Remover a aba da visualização
-      PageControlMain.Pages[i].Free;  // Liberar a aba
+      PageControlMain.Pages[i].Free;
     end;
   end;
+end;
+
+procedure TFrmMain.BtnFecharClick(Sender: TObject);
+begin
+  FecharFormulariosAbertos;
+  Close;
 end;
 
 procedure TFrmMain.BtnSairClick(Sender: TObject);

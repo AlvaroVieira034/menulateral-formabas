@@ -54,6 +54,8 @@ object FrmCadVenda: TFrmCadVenda
         ParentFont = False
         TabOrder = 4
         OnClick = PnlCancelarClick
+        OnMouseEnter = PnlCancelarMouseEnter
+        OnMouseLeave = PnlCancelarMouseLeave
       end
       object PnlGravar: TPanel
         Left = 446
@@ -71,6 +73,8 @@ object FrmCadVenda: TFrmCadVenda
         ParentFont = False
         TabOrder = 5
         OnClick = PnlGravarClick
+        OnMouseEnter = PnlGravarMouseEnter
+        OnMouseLeave = PnlGravarMouseLeave
       end
       object GrbDados: TGroupBox
         Left = 9
@@ -308,6 +312,8 @@ object FrmCadVenda: TFrmCadVenda
         ParentFont = False
         TabOrder = 1
         OnClick = PnlNovoClick
+        OnMouseEnter = PnlNovoMouseEnter
+        OnMouseLeave = PnlNovoMouseLeave
       end
       object PnlAlterar: TPanel
         Left = 446
@@ -325,6 +331,8 @@ object FrmCadVenda: TFrmCadVenda
         ParentFont = False
         TabOrder = 2
         OnClick = PnlAlterarClick
+        OnMouseEnter = PnlAlterarMouseEnter
+        OnMouseLeave = PnlAlterarMouseLeave
       end
       object PnlExcluir: TPanel
         Left = 536
@@ -342,6 +350,8 @@ object FrmCadVenda: TFrmCadVenda
         ParentFont = False
         TabOrder = 3
         OnClick = PnlExcluirClick
+        OnMouseEnter = PnlExcluirMouseEnter
+        OnMouseLeave = PnlExcluirMouseLeave
       end
     end
     object PnlGrid: TPanel

@@ -2,6 +2,8 @@ unit ucadvenda;
 
 interface
 
+{$REGION 'Componentes'}
+
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
@@ -10,9 +12,13 @@ uses
   cliente.model, cliente.controller, venda.model, vendaitens.model, venda.controller, vendaitens.controller,
   untFormat, upesqvendas, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls;
 
+{$ENDREGION}
+
 type
   TOperacao = (opInicio, opNovo, opEditar, opNavegar, opErro);
   TFrmCadVenda = class(TForm)
+
+{$REGION 'Componentes'}
     PnlFundo: TPanel;
     PnlDados: TPanel;
     PnlCancelar: TPanel;
@@ -58,10 +64,12 @@ type
     MTblVendaItemVAL_PRECOUNITARIO: TFloatField;
     MTblVendaItemVAL_TOTALITEM: TFloatField;
     DsVendaItem: TDataSource;
+
+{$ENDREGION}
+
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure BtnFecharClick(Sender: TObject);
     procedure PnlNovoClick(Sender: TObject);
     procedure PnlAlterarClick(Sender: TObject);
     procedure PnlExcluirClick(Sender: TObject);
@@ -86,6 +94,17 @@ type
     procedure BtnAddItemGridClick(Sender: TObject);
     procedure BtnDelItemGridClick(Sender: TObject);
     procedure DbGridItensPedidoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure BtnFecharClick(Sender: TObject);
+    procedure PnlNovoMouseEnter(Sender: TObject);
+    procedure PnlNovoMouseLeave(Sender: TObject);
+    procedure PnlAlterarMouseEnter(Sender: TObject);
+    procedure PnlAlterarMouseLeave(Sender: TObject);
+    procedure PnlExcluirMouseEnter(Sender: TObject);
+    procedure PnlExcluirMouseLeave(Sender: TObject);
+    procedure PnlGravarMouseEnter(Sender: TObject);
+    procedure PnlGravarMouseLeave(Sender: TObject);
+    procedure PnlCancelarMouseEnter(Sender: TObject);
+    procedure PnlCancelarMouseLeave(Sender: TObject);
 
   private
     ValoresOriginais: array of string;
@@ -124,6 +143,10 @@ type
     procedure VerificaBotoes(AOperacao: TOperacao);
     procedure HabilitarBotaoIncluirItens;
 
+    procedure EditEnter(Sender: TObject);
+    procedure EditExit(Sender: TObject);
+    procedure ApplyEditFocusEvents;
+
   public
     FOperacao: TOperacao;
     pesqVenda: Boolean;
@@ -138,6 +161,7 @@ var
   totVenda, totVendaAnt: Double;
   idItem: Integer;
   alterouGrid: Boolean;
+  LCorInicial : TColor;
 
 implementation
 
@@ -179,6 +203,7 @@ procedure TFrmCadVenda.FormCreate(Sender: TObject);
 var sCampo: string;
 begin
   inherited;
+  ApplyEditFocusEvents;
   if TConexao.GetInstance.Connection.TestarConexao then
   begin
     // Define transação para vendas
@@ -602,13 +627,14 @@ begin
 end;
 
 procedure TFrmCadVenda.DbGridItensPedidoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var LPrecoUnit, LPrecoTotal: double;
 begin
   if Key = VK_RETURN then
   begin
     LCbxProdutos.KeyValue := MTblVendaItemCOD_PRODUTO.AsInteger;
     EdtQuantidade.Text := IntToStr(MTblVendaItemVAL_QUANTIDADE.AsInteger);
-    EdtPrecoUnit.Text := FloatToStr(MTblVendaItemVAL_PRECOUNITARIO.AsFloat);
-    EdtPrecoTotal.Text := FloatToStr(MTblVendaItemVAL_TOTALITEM.AsFloat);
+    EdtPrecoUnit.Text := FormatFloat('######0.00', MTblVendaItemVAL_PRECOUNITARIO.AsFloat);
+    EdtPrecoTotal.Text := FormatFloat('######0.00', MTblVendaItemVAL_TOTALITEM.AsFloat);
     alterouGrid := True;
     idItem := MTblVendaItemID_VENDA.AsInteger;
     totVendaAnt := MTblVendaItemVAL_TOTALITEM.AsFloat;
@@ -617,43 +643,156 @@ begin
 
   if Key = VK_DELETE then
   begin
-   BtnDelItemGridClick(Sender);
+    BtnDelItemGridClick(Sender);
   end;
 end;
 
 procedure TFrmCadVenda.Inserir;
+var sErro: string;
 begin
+  try
+    if not TransacaoVendas.Connection.Connected then
+      TransacaoVendas.Connection.Open();
 
+    TransacaoVendas.StartTransaction;
+    try
+      InserirVendas();
+      InserirVendaItens();
+      TransacaoVendas.Commit;
+      EdtCodVenda.Text := IntToStr(codigoVenda);
+      MessageDlg('Venda inserida com sucesso!', mtInformation, [mbOK],0);
+    except
+      on E: Exception do
+      begin
+        TransacaoVendas.Rollback;
+        LimpaCamposItens();
+        LimpaCamposPedido();
+        MTblVendaItem.Close;
+        FOperacao := opErro;
+        VerificaBotoes(FOperacao);
+        raise Exception.Create('Erro ao inserir a venda e/ou os itens: ' + #13 + E.Message);
+      end;
+    end;
+  except
+    on E: Exception do
+    begin
+      MessageDlg('Falha ao gravar a venda: ' + E.Message, mtError, [mbOK], 0);
+    end;
+  end;
 end;
 
 procedure TFrmCadVenda.InserirVendas;
+var sErro: string;
 begin
+  with FVenda do
+  begin
+    Dta_Venda := StrToDate(EdtDataVenda.Text);
+    Cod_Cliente := StrToInt(EdtCodCliente.Text);
+    Val_Venda := StrToFloat(
+    StringReplace(StringReplace(EdtTotalVenda.Text, '.', '', [rfReplaceAll]), ',', FormatSettings.DecimalSeparator, [rfReplaceAll]));
 
+    if VendaController.Inserir(QryVendas, FVenda, TransacaoVendas, sErro) = false then
+      raise Exception.Create(sErro);
+
+    codigoVenda := FVenda.Cod_Venda;
+  end;
 end;
 
 procedure TFrmCadVenda.InserirVendaItens;
+var sErro : string;
 begin
+  MTblVendaItem.First;
+  while not MTblVendaItem.eof do
+  begin
+    with FVendaItens do
+    begin
+      Cod_Venda := FVenda.Cod_Venda;
+      Cod_Produto := MTblVendaItemCOD_PRODUTO.AsInteger;
+      Des_Descricao := MTblVendaItemDES_DESCRICAO.AsString;
+      Val_PrecoUnitario := MTblVendaItemVAL_PRECOUNITARIO.AsFloat;
+      Val_Quantidade := MTblVendaItemVAL_QUANTIDADE.AsInteger;
+      Val_TotalItem := MTblVendaItemVAL_TOTALITEM.AsFloat;
 
+      if VendaItensController.Inserir(QryVendaItens, FVendaItens, TransacaoVendas, sErro) = false then
+        raise Exception.Create(sErro);
+    end;
+    MTblVendaItem.Next;
+  end;
 end;
 
 procedure TFrmCadVenda.Alterar;
+var sErro: string;
 begin
+  try
+    if not TransacaoVendas.Connection.Connected then
+      TransacaoVendas.Connection.Open();
 
+    TransacaoVendas.StartTransaction;
+    try
+      AlterarVendaItens();
+      AlterarVendas();
+      TransacaoVendas.Commit;
+      EdtCodVenda.Text := IntToStr(codigoVenda);
+      MessageDlg('Venda alterada com sucesso!', mtInformation, [mbOK],0);
+    except
+      on E: Exception do
+      begin
+        TransacaoVendas.Rollback;
+        LimpaCamposItens();
+        LimpaCamposPedido();
+        MTblVendaItem.Close;
+        FOperacao := opErro;
+        VerificaBotoes(FOperacao);
+        raise Exception.Create('Erro ao inserir a venda e/ou os itens: ' + #13 + E.Message);
+      end;
+    end;
+  except
+    on E: Exception do
+    begin
+      MessageDlg('Falha ao gravar a venda: ' + E.Message, mtError, [mbOK], 0);
+    end;
+  end;
 end;
 
 procedure TFrmCadVenda.AlterarVendas;
+var sErro: string;
 begin
+  with FVenda do
+  begin
+    Dta_Venda := StrToDate(EdtDataVenda.Text);
+    Cod_Cliente := StrToInt(EdtCodCliente.Text);
+    Val_Venda := StrToFloat(EdtTotalVenda.Text);
+  end;
 
+  if VendaController.Alterar(QryVendas, FVenda, TransacaoVendas, StrToInt(EdtCodVenda.Text), sErro) = False then
+    raise Exception.Create(sErro);
 end;
 
 procedure TFrmCadVenda.AlterarVendaItens;
+var sErro: string;
 begin
-
+  try
+    VendaItensController.Excluir(QryVendaItens, TransacaoVendas, StrToInt(EdtCodVenda.Text),  sErro);
+    InserirVendaItens();
+  except on E: Exception do
+    begin
+      sErro := 'Ocorreu um erro ao alterar os itens da venda!' + sLineBreak + E.Message;
+      raise;
+    end;
+  end;
 end;
 
 procedure TFrmCadVenda.ExcluirVendas;
+var sErro: string;
 begin
+  if MessageDlg('Deseja realmente excluir a venda selecionada ?',mtConfirmation, [mbYes, mbNo],0) = IDYES then
+  begin
+    if VendaItensController.Excluir(QryVendaItens, TransacaoVendas, StrToInt(EdtCodVenda.Text), sErro) = False then
+      raise Exception.Create(sErro);
 
+    if VendaController.Excluir(QryVendas, TransacaoVendas, StrToInt(EdtCodVenda.Text), sErro) = False then
+      raise Exception.Create(sErro);
+  end;
 end;
 
 function TFrmCadVenda.ValidarDados(ATipoDados: string): Boolean;
@@ -842,6 +981,87 @@ procedure TFrmCadVenda.HabilitarBotaoIncluirItens;
 begin
   if (FOperacao = opNovo) then
     BtnInserirItens.Enabled := (EdtDataVenda.Text <> '') and (EdtCodCliente.Text <> '');
+end;
+
+procedure TFrmCadVenda.EditEnter(Sender: TObject);
+begin
+  (Sender as TEdit).Color := $00D2FFFF;
+end;
+
+procedure TFrmCadVenda.EditExit(Sender: TObject);
+begin
+  (Sender as TEdit).Color := clWindow;
+end;
+
+procedure TFrmCadVenda.ApplyEditFocusEvents;
+var i: Integer;
+begin
+  // Itera por todos os componentes do formulário
+  for i := 0 to Self.ComponentCount - 1 do
+  begin
+    // Verifica se o componente é um TEdit
+    if (Components[i] is TEdit) then
+    begin
+      // Associa dinamicamente os eventos OnEnter e OnExit
+      (Components[i] as TEdit).OnEnter := EditEnter;
+      (Components[i] as TEdit).OnExit := EditExit;
+    end;
+  end;
+end;
+
+procedure TFrmCadVenda.PnlNovoMouseEnter(Sender: TObject);
+begin
+  LCorInicial := PnlNovo.Color;
+  PnlNovo.Color := $00005500;
+end;
+
+procedure TFrmCadVenda.PnlNovoMouseLeave(Sender: TObject);
+begin
+  PnlNovo.Color := clGreen;
+end;
+
+procedure TFrmCadVenda.PnlAlterarMouseEnter(Sender: TObject);
+begin
+  LCorInicial := PnlAlterar.Color;
+  PnlAlterar.Color := $000066CC;
+end;
+
+procedure TFrmCadVenda.PnlAlterarMouseLeave(Sender: TObject);
+begin
+  PnlAlterar.Color := $000080FF;
+end;
+
+procedure TFrmCadVenda.PnlExcluirMouseEnter(Sender: TObject);
+begin
+  LCorInicial := PnlExcluir.Color;
+  PnlExcluir.Color := $000000B3;
+end;
+
+procedure TFrmCadVenda.PnlExcluirMouseLeave(Sender: TObject);
+begin
+  PnlExcluir.Color := clRed;
+end;
+
+procedure TFrmCadVenda.PnlGravarMouseEnter(Sender: TObject);
+begin
+  LCorInicial := PnlGravar.Color;
+  PnlGravar.Color := $00D56A00;
+end;
+
+procedure TFrmCadVenda.PnlGravarMouseLeave(Sender: TObject);
+begin
+   PnlGravar.Color := $00FF962D;
+end;
+
+procedure TFrmCadVenda.PnlCancelarMouseEnter(Sender: TObject);
+begin
+  LCorInicial := PnlCancelar.Color;
+  PnlCancelar.Color := $00606060;
+end;
+
+procedure TFrmCadVenda.PnlCancelarMouseLeave(Sender: TObject);
+begin
+  PnlCancelar.Color := clGray;
 end;
 
 procedure TFrmCadVenda.BtnFecharClick(Sender: TObject);

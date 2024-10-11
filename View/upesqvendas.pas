@@ -70,6 +70,8 @@ destructor TFrmPesquisaVendas.Destroy;
 begin
   DsVendas.Free;
   TblVendas.Free;
+  FVenda.Free;
+  VendaController.Free;
   inherited;
 end;
 
@@ -99,6 +101,14 @@ begin
   DbGridPedidos.Columns[2].Width := 350;
   DbGridPedidos.Columns[3].Width := 100;
   PreencherGrid(TblVendas, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text);
+end;
+
+procedure TFrmPesquisaVendas.CriarTabelas;
+begin
+  TblVendas := TConexao.GetInstance.Connection.CriarQuery;
+  DsVendas := TConexao.GetInstance.Connection.CriarDataSource;
+  DsVendas.DataSet := TblVendas;
+  DbGridPedidos.DataSource := DsVendas;
 end;
 
 procedure TFrmPesquisaVendas.CriarCamposTabelas;
@@ -136,6 +146,27 @@ begin
   FloatField.DisplayFormat := '#,###,##0.00';
 end;
 
+procedure TFrmPesquisaVendas.PreencherGrid(TblVendas: TFDQuery; APesquisa, ACampo: string);
+begin
+  VendaController.PreencherGrid(TblVendas, APesquisa + '%', ACampo);
+end;
+
+procedure TFrmPesquisaVendas.CbxFiltroClick(Sender: TObject);
+begin
+  BtnPesquisar.Click;
+end;
+
+procedure TFrmPesquisaVendas.BtnPesquisarClick(Sender: TObject);
+begin
+  PreencherGrid(TblVendas, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text)
+end;
+
+procedure TFrmPesquisaVendas.BtnSelecionarClick(Sender: TObject);
+begin
+  AtribuirValoresFormVenda('Navegar');
+  BtnSair.Click;
+end;
+
 procedure TFrmPesquisaVendas.DbGridPedidosDblClick(Sender: TObject);
 begin
   AtribuirValoresFormVenda('Navegar');
@@ -150,41 +181,6 @@ begin
     BtnSair.Click;
     Key := 0;
   end;
-end;
-
-procedure TFrmPesquisaVendas.CbxFiltroClick(Sender: TObject);
-begin
-  BtnPesquisar.Click;
-end;
-
-procedure TFrmPesquisaVendas.BtnFecharClick(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure TFrmPesquisaVendas.BtnPesquisarClick(Sender: TObject);
-begin
-  PreencherGrid(TblVendas, Trim(EdtPesquisar.Text) + '%', CbxFiltro.Text)
-end;
-
-procedure TFrmPesquisaVendas.PreencherGrid(TblVendas: TFDQuery; APesquisa, ACampo: string);
-begin
-  VendaController.PreencherGrid(TblVendas, APesquisa + '%', ACampo);
-end;
-
-procedure TFrmPesquisaVendas.CriarTabelas;
-begin
-  TblVendas := TConexao.GetInstance.Connection.CriarQuery;
-  DsVendas := TConexao.GetInstance.Connection.CriarDataSource;
-  DsVendas.DataSet := TblVendas;
-  DbGridPedidos.DataSource := DsVendas;
-end;
-
-procedure TFrmPesquisaVendas.BtnSelecionarClick(Sender: TObject);
-begin
-  AtribuirValoresFormVenda('Navegar');
-  //FrmCadVenda.FOperacao := opNavegar;
-  BtnSair.Click;
 end;
 
 procedure TFrmPesquisaVendas.AtribuirValoresFormVenda(const AOperacao: string);
@@ -209,20 +205,22 @@ begin
     FormVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
     FormVenda.pesqVenda := True;
     if AOperacao = 'Navegar' then
-      FormVenda.FOperacao := opNavegar; // Atribui a operação passada como parâmetro
+      FormVenda.FOperacao := opNavegar;
 
     if AOperacao = 'Editar' then
       FormVenda.FOperacao := opEditar;
   end;
 
-  // Ao sair, utilize a função para fechar o formulário
-  BtnSair.Click; // Fecha o formulário de pesquisa
+  BtnSair.Click;
+end;
+
+procedure TFrmPesquisaVendas.BtnFecharClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFrmPesquisaVendas.BtnSairClick(Sender: TObject);
 begin
-  //FVenda.Free;
-  //VendaController.Free;
   Close;
 end;
 
