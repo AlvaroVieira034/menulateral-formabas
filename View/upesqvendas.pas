@@ -57,7 +57,7 @@ implementation
 
 {$R *.dfm}
 
-uses conexao.model, ucadvenda;
+uses conexao.model, ucadvenda, umain;
 
 constructor TFrmPesquisaVendas.Create(AOwner: TComponent);
 begin
@@ -102,10 +102,32 @@ begin
 end;
 
 procedure TFrmPesquisaVendas.DbGridPedidosDblClick(Sender: TObject);
+var FormVenda: TFrmCadVenda;
+    i: Integer;
 begin
-  FrmCadVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
+  // Procurar a aba com o formulário de vendas
+  for i := 0 to FrmMain.PageControlMain.PageCount - 1 do
+  begin
+    if FrmMain.PageControlMain.Pages[i].Caption = 'Cadastro de Vendas' then
+    begin
+      // Acessar o formulário armazenado no Tag da aba
+      FormVenda := TFrmCadVenda(FrmMain.PageControlMain.Pages[i].Tag);
+      Break;
+    end;
+  end;
+
+  if Assigned(FormVenda) then
+  begin
+    // Atribuir os valores desejados à instância correta do formulário
+    FormVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
+    FormVenda.pesqVenda := True;
+    FormVenda.FOperacao := opNavegar;
+  end;
+
+  {FrmCadVenda.codigoVenda := DsVendas.DataSet.FieldByName('COD_VENDA').AsInteger;
   FrmCadVenda.pesqVenda := True;
-  FrmCadVenda.FOperacao := opNavegar;
+  FrmCadVenda.FOperacao := opNavegar;}
+
   BtnSair.Click;
 end;
 

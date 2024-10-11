@@ -1,72 +1,123 @@
-inherited FrmCadVenda: TFrmCadVenda
-  Caption = 'Cadastro de Vendas'
-  ClientHeight = 623
-  ClientWidth = 733
-  ExplicitWidth = 733
-  ExplicitHeight = 623
+object FrmCadVenda: TFrmCadVenda
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'FrmCadVenda'
+  ClientHeight = 632
+  ClientWidth = 631
+  Color = clBtnFace
+  Font.Charset = ANSI_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 15
-  inherited PnlFundo: TPanel
-    Width = 733
-    Height = 623
-    ExplicitWidth = 733
-    ExplicitHeight = 637
-    inherited PnlDados: TPanel
-      Width = 733
-      Height = 236
-      ExplicitWidth = 733
-      ExplicitHeight = 236
-      inherited PnlCancelar: TPanel
-        Left = 639
-        Top = 13
-        ExplicitLeft = 639
-        ExplicitTop = 13
+  object PnlFundo: TPanel
+    Left = 0
+    Top = 0
+    Width = 631
+    Height = 632
+    Margins.Left = 0
+    Margins.Top = 0
+    Margins.Right = 0
+    Margins.Bottom = 0
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 0
+    ExplicitWidth = 767
+    ExplicitHeight = 532
+    object PnlDados: TPanel
+      Left = 0
+      Top = 24
+      Width = 631
+      Height = 257
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 0
+      ExplicitLeft = 192
+      ExplicitTop = 26
+      ExplicitWidth = 689
+      object PnlCancelar: TPanel
+        Left = 536
+        Top = 10
+        Width = 86
+        Height = 29
+        Caption = 'Cancelar'
+        Color = clGray
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 4
+        OnClick = PnlCancelarClick
       end
-      inherited PnlGravar: TPanel
-        Left = 549
-        Top = 13
-        ExplicitLeft = 549
-        ExplicitTop = 13
+      object PnlGravar: TPanel
+        Left = 446
+        Top = 10
+        Width = 86
+        Height = 29
+        Caption = 'Gravar'
+        Color = 16750125
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 5
+        OnClick = PnlGravarClick
       end
-      inherited GrbDados: TGroupBox
+      object GrbDados: TGroupBox
         Left = 9
-        Width = 716
-        Height = 189
-        Caption = ' Dados da venda '
-        ExplicitLeft = 9
-        ExplicitWidth = 716
-        ExplicitHeight = 189
+        Top = 41
+        Width = 613
+        Height = 213
+        Caption = ' Dados da Venda '
+        TabOrder = 0
+        DesignSize = (
+          613
+          213)
         object Label1: TLabel
-          Left = 51
-          Top = 33
+          Left = 53
+          Top = 46
           Width = 93
           Height = 15
           Caption = '&C'#243'digo da Venda:'
         end
         object Label3: TLabel
-          Left = 66
-          Top = 62
+          Left = 68
+          Top = 76
           Width = 78
           Height = 15
           Caption = '&Data da Venda:'
         end
         object Label4: TLabel
-          Left = 36
-          Top = 121
+          Left = 38
+          Top = 136
           Width = 108
           Height = 15
           Caption = '&Valor Total da Venda:'
         end
         object Label5: TLabel
-          Left = 45
-          Top = 91
+          Left = 47
+          Top = 106
           Width = 99
           Height = 15
-          Caption = 'C'#243'digo do Cliente:'
+          Caption = 'C'#243'&digo do Cliente:'
         end
         object BtnLimpaCampos: TSpeedButton
-          Left = 683
-          Top = 154
+          Left = 574
+          Top = 179
           Width = 28
           Height = 28
           Hint = 'Limpa os campos do dados da venda'
@@ -131,11 +182,13 @@ inherited FrmCadVenda: TFrmCadVenda
           ParentShowHint = False
           ParentBiDiMode = False
           ShowHint = True
+          OnClick = BtnLimpaCamposClick
+          ExplicitLeft = 627
         end
         object BtnPesquisar: TSpeedButton
-          Left = 226
-          Top = 29
-          Width = 27
+          Left = 236
+          Top = 39
+          Width = 29
           Height = 23
           Hint = 'Pesquisar'
           Font.Charset = ANSI_CHARSET
@@ -176,10 +229,10 @@ inherited FrmCadVenda: TFrmCadVenda
           OnClick = BtnPesquisarClick
         end
         object EdtCodVenda: TEdit
-          Left = 150
-          Top = 30
+          Left = 160
+          Top = 40
           Width = 74
-          Height = 23
+          Height = 21
           Hint = 
             'Digite o c'#243'digo da venda ou clique no bot'#227'o pesquisar para abrir' +
             ' a janela de pesquisa.'
@@ -187,46 +240,52 @@ inherited FrmCadVenda: TFrmCadVenda
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
+          OnKeyPress = EdtCodVendaKeyPress
         end
         object EdtDataVenda: TEdit
-          Left = 150
-          Top = 59
+          Left = 160
+          Top = 70
           Width = 74
-          Height = 23
+          Height = 21
           Alignment = taRightJustify
           CharCase = ecUpperCase
           MaxLength = 10
           TabOrder = 1
+          OnChange = EdtDataVendaChange
         end
         object EdtTotalVenda: TEdit
-          Left = 150
-          Top = 118
+          Left = 160
+          Top = 130
           Width = 76
-          Height = 23
+          Height = 21
           Alignment = taRightJustify
           Enabled = False
           TabOrder = 4
         end
         object EdtCodCliente: TEdit
-          Left = 150
-          Top = 88
+          Left = 160
+          Top = 100
           Width = 76
-          Height = 23
+          Height = 21
           Alignment = taRightJustify
           TabOrder = 2
+          OnChange = EdtCodClienteChange
+          OnExit = EdtCodClienteExit
+          OnKeyPress = EdtCodClienteKeyPress
         end
         object LcbxNomeCliente: TDBLookupComboBox
-          Left = 228
-          Top = 87
+          Left = 238
+          Top = 98
           Width = 284
           Height = 23
           KeyField = 'COD_CLIENTE'
           ListField = 'DES_NOME'
           TabOrder = 3
+          OnClick = LcbxNomeClienteClick
         end
         object BtnInserirItens: TButton
-          Left = 289
-          Top = 152
+          Left = 248
+          Top = 177
           Width = 121
           Height = 30
           Caption = 'In&serir Itens'
@@ -235,141 +294,187 @@ inherited FrmCadVenda: TFrmCadVenda
           ImageMargins.Left = 12
           Images = FrmMain.ImageList
           TabOrder = 5
+          OnClick = BtnInserirItensClick
         end
       end
-      inherited PnlNovo: TPanel
-        Left = 459
-        Top = 13
-        ExplicitLeft = 459
-        ExplicitTop = 13
+      object PnlNovo: TPanel
+        Left = 356
+        Top = 10
+        Width = 86
+        Height = 29
+        Caption = 'Novo'
+        Color = clGreen
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 1
+        OnClick = PnlNovoClick
       end
-      inherited PnlAlterar: TPanel
-        Left = 549
-        Top = 13
+      object PnlAlterar: TPanel
+        Left = 446
+        Top = 10
+        Width = 86
+        Height = 29
+        Caption = 'Alterar'
+        Color = 33023
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 2
         OnClick = PnlAlterarClick
-        ExplicitLeft = 549
-        ExplicitTop = 13
       end
-      inherited PnlExcluir: TPanel
-        Left = 639
-        Top = 13
-        ExplicitLeft = 639
-        ExplicitTop = 13
+      object PnlExcluir: TPanel
+        Left = 536
+        Top = 10
+        Width = 86
+        Height = 29
+        Caption = 'Excluir'
+        Color = clRed
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 3
+        OnClick = PnlExcluirClick
       end
     end
-    inherited PnlGrid: TPanel
-      Top = 260
-      Width = 733
-      Height = 363
-      ExplicitTop = 260
-      ExplicitWidth = 733
-      ExplicitHeight = 357
-      inherited GrbGrid: TGroupBox
+    object PnlGrid: TPanel
+      Left = 0
+      Top = 281
+      Width = 631
+      Height = 351
+      Align = alClient
+      BevelOuter = bvNone
+      TabOrder = 1
+      ExplicitLeft = -1
+      ExplicitTop = 284
+      ExplicitWidth = 672
+      object GrbGrid: TGroupBox
         Left = 9
-        Top = -4
-        Width = 716
-        Height = 360
+        Top = 0
+        Width = 613
+        Height = 341
         Caption = ' Itens da Venda '
-        ExplicitLeft = 9
-        ExplicitTop = -4
-        ExplicitWidth = 716
-        ExplicitHeight = 360
+        TabOrder = 0
         object Label10: TLabel
-          Left = 10
-          Top = 18
+          Left = 11
+          Top = 21
           Width = 43
           Height = 15
           Caption = 'Produto'
         end
         object Label12: TLabel
-          Left = 251
-          Top = 18
+          Left = 249
+          Top = 21
           Width = 62
           Height = 15
           Caption = 'Quantidade'
         end
         object Label13: TLabel
-          Left = 326
-          Top = 18
+          Left = 323
+          Top = 21
           Width = 75
           Height = 15
           Caption = 'Pre'#231'o Unit'#225'rio'
         end
         object Label14: TLabel
-          Left = 438
-          Top = 18
+          Left = 440
+          Top = 21
           Width = 58
           Height = 15
           Caption = 'Pre'#231'o Total'
         end
         object EdtQuantidade: TEdit
           Left = 249
-          Top = 34
+          Top = 37
           Width = 61
           Height = 23
           Alignment = taRightJustify
           TabOrder = 1
+          OnExit = EdtQuantidadeExit
+          OnKeyPress = EdtQuantidadeKeyPress
         end
         object EdtPrecoUnit: TEdit
-          Left = 322
-          Top = 34
+          Left = 321
+          Top = 37
           Width = 100
           Height = 23
           Alignment = taRightJustify
           TabOrder = 2
+          OnExit = EdtPrecoUnitExit
+          OnKeyPress = EdtPrecoUnitKeyPress
         end
         object EdtPrecoTotal: TEdit
-          Left = 435
-          Top = 34
+          Left = 440
+          Top = 37
           Width = 100
           Height = 23
           Alignment = taRightJustify
           TabOrder = 3
+          OnExit = EdtPrecoTotalExit
+          OnKeyPress = EdtPrecoTotalKeyPress
         end
         object LCbxProdutos: TDBLookupComboBox
-          Left = 10
-          Top = 34
+          Left = 11
+          Top = 37
           Width = 230
           Height = 23
           KeyField = 'COD_PRODUTO'
           ListField = 'DES_NOMEPRODUTO'
           ListFieldIndex = 1
           TabOrder = 0
+          OnClick = LCbxProdutosClick
         end
         object BtnAddItemGrid: TButton
-          Left = 543
-          Top = 33
+          Left = 548
+          Top = 36
           Width = 24
           Height = 24
           ImageIndex = 0
           Images = FrmMain.ImageList
           TabOrder = 4
+          OnClick = BtnAddItemGridClick
         end
         object BtnDelItemGrid: TButton
-          Left = 573
-          Top = 33
+          Left = 578
+          Top = 36
           Width = 24
           Height = 24
           ImageIndex = 1
           Images = FrmMain.ImageList
           TabOrder = 5
+          OnClick = BtnDelItemGridClick
         end
         object DbGridItensPedido: TDBGrid
-          Left = 10
-          Top = 65
-          Width = 698
-          Height = 286
+          Left = 11
+          Top = 68
+          Width = 591
+          Height = 261
+          DataSource = DsVendaItem
           TabOrder = 6
           TitleFont.Charset = ANSI_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -12
           TitleFont.Name = 'Segoe UI'
           TitleFont.Style = []
+          OnKeyDown = DbGridItensPedidoKeyDown
           Columns = <
             item
               Expanded = False
               FieldName = 'DES_DESCRICAO'
               Title.Caption = 'Produto'
+              Width = 269
               Visible = True
             end
             item
@@ -378,7 +483,7 @@ inherited FrmCadVenda: TFrmCadVenda
               FieldName = 'VAL_QUANTIDADE'
               Title.Alignment = taCenter
               Title.Caption = 'Quantidade'
-              Width = 81
+              Width = 75
               Visible = True
             end
             item
@@ -386,7 +491,7 @@ inherited FrmCadVenda: TFrmCadVenda
               FieldName = 'VAL_PRECOUNITARIO'
               Title.Alignment = taCenter
               Title.Caption = 'Pre'#231'o Unit'#225'rio'
-              Width = 90
+              Width = 98
               Visible = True
             end
             item
@@ -415,18 +520,132 @@ inherited FrmCadVenda: TFrmCadVenda
         end
       end
     end
-    inherited PnlTopo: TPanel
-      Width = 733
-      ExplicitWidth = 733
-      inherited BtnFechar: TSpeedButton
-        Left = 710
-        ExplicitLeft = 713
+    object PnlTopo: TPanel
+      Left = 0
+      Top = 0
+      Width = 631
+      Height = 24
+      Align = alTop
+      BevelOuter = bvNone
+      Color = clGray
+      ParentBackground = False
+      TabOrder = 2
+      ExplicitWidth = 767
+      DesignSize = (
+        631
+        24)
+      object BtnFechar: TSpeedButton
+        Left = 608
+        Top = 0
+        Width = 22
+        Height = 24
+        Margins.Left = 0
+        Margins.Top = 0
+        Margins.Right = 0
+        Margins.Bottom = 0
+        Anchors = [akTop, akRight]
+        Flat = True
+        Glyph.Data = {
+          36040000424D3604000000000000360000002800000010000000100000000100
+          2000000000000004000000000000000000000000000000000000000000080000
+          0098000000F4000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000F40000009800000008000000980000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000098000000F40000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000F4000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000F800000079000000EB000000FF000000FF0000
+          00EB00000079000000F8000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF00000079000000000000002F000000EB000000EB0000
+          002F0000000000000079000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000EB0000002F000000000000002F0000002F0000
+          00000000002F000000EB000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000EB0000002F00000000000000000000
+          002F000000EB000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000EB0000002F00000000000000000000
+          002F000000EB000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000EB0000002F000000000000002F0000002F0000
+          00000000002F000000EB000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF00000079000000000000002F000000EB000000EB0000
+          002F0000000000000079000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000F800000079000000EB000000FF000000FF0000
+          00EB00000079000000F8000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000F40000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF000000F4000000980000
+          00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000FF000000FF00000098000000080000
+          0098000000F4000000FF000000FF000000FF000000FF000000FF000000FF0000
+          00FF000000FF000000FF000000FF000000F40000009800000008}
+        Margin = 2
+        Spacing = 0
+        Transparent = False
+        OnClick = BtnFecharClick
+        ExplicitLeft = 975
       end
-      inherited Label2: TLabel
+      object Label2: TLabel
+        Left = 11
+        Top = 4
         Width = 103
+        Height = 15
         Caption = 'Cadastro de Vendas'
-        ExplicitWidth = 103
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWhite
+        Font.Height = -12
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
       end
     end
+  end
+  object MTblVendaItem: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 531
+    Top = 428
+    object MTblVendaItemID_VENDA: TIntegerField
+      FieldName = 'ID_VENDA'
+      Required = True
+    end
+    object MTblVendaItemCOD_VENDA: TIntegerField
+      FieldName = 'COD_VENDA'
+      Required = True
+    end
+    object MTblVendaItemCOD_PRODUTO: TIntegerField
+      FieldName = 'COD_PRODUTO'
+      Required = True
+    end
+    object MTblVendaItemDES_DESCRICAO: TStringField
+      FieldName = 'DES_DESCRICAO'
+      Size = 100
+    end
+    object MTblVendaItemVAL_QUANTIDADE: TIntegerField
+      FieldName = 'VAL_QUANTIDADE'
+      Required = True
+    end
+    object MTblVendaItemVAL_PRECOUNITARIO: TFloatField
+      FieldName = 'VAL_PRECOUNITARIO'
+      DisplayFormat = '##,###,##0.00'
+    end
+    object MTblVendaItemVAL_TOTALITEM: TFloatField
+      FieldName = 'VAL_TOTALITEM'
+      DisplayFormat = '##,###,##0.00'
+    end
+  end
+  object DsVendaItem: TDataSource
+    DataSet = MTblVendaItem
+    Left = 531
+    Top = 482
   end
 end

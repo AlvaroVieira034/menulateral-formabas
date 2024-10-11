@@ -21,11 +21,11 @@ uses
   vendaitens.controller in 'Controller\vendaitens.controller.pas',
   ucadcliente in 'View\ucadcliente.pas' {FrmCadCliente},
   utemp in 'View\utemp.pas' {FrmTemp},
-  ucadvenda in 'View\ucadvenda.pas' {FrmCadVenda},
   upesqvendas in 'View\upesqvendas.pas' {FrmPesquisaVendas},
   untFormat in 'Lib\untFormat.pas',
   cepservice.model in 'Model\cepservice.model.pas',
-  Biblioteca in 'Lib\Biblioteca.pas';
+  Biblioteca in 'Lib\Biblioteca.pas',
+  ucadvenda in 'View\ucadvenda.pas' {FrmCadVenda};
 
 {$R *.res}
 
@@ -33,7 +33,5 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TFrmMain, FrmMain);
-  Application.CreateForm(TFrmCadVenda, FrmCadVenda);
-  Application.CreateForm(TFrmPesquisaVendas, FrmPesquisaVendas);
   Application.Run;
 end.

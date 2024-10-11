@@ -25,10 +25,6 @@ object FrmPesquisaVendas: TFrmPesquisaVendas
     Height = 485
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -1
-    ExplicitTop = 25
-    ExplicitWidth = 676
-    ExplicitHeight = 504
     object DbGridPedidos: TDBGrid
       Left = 2
       Top = 15
@@ -85,8 +81,6 @@ object FrmPesquisaVendas: TFrmPesquisaVendas
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
-      ExplicitTop = 348
-      ExplicitWidth = 678
       DesignSize = (
         656
         37)
@@ -226,7 +220,6 @@ object FrmPesquisaVendas: TFrmPesquisaVendas
         Anchors = [akLeft, akTop, akRight]
         CharCase = ecUpperCase
         TabOrder = 1
-        ExplicitWidth = 333
       end
       object CbxFiltro: TComboBox
         Left = 59
@@ -253,7 +246,6 @@ object FrmPesquisaVendas: TFrmPesquisaVendas
     Color = clGray
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 722
     DesignSize = (
       660
       24)

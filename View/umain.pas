@@ -90,9 +90,27 @@ begin
   end;
 end;
 
-procedure TFrmMain.BtnFecharClick(Sender: TObject);
+function TFrmMain.MouseStillOverPanel: Boolean;
+var MousePos: TPoint;
 begin
-  Close;
+  // Pega a posição atual do mouse
+  GetCursorPos(MousePos);
+  // Converte para as coordenadas relativas ao formulário
+  MousePos := ScreenToClient(MousePos);
+
+  // Verifica se o mouse ainda está sobre o painel lateral
+  Result := PtInRect(PnlLateral.BoundsRect, MousePos);
+end;
+
+procedure TFrmMain.PnlLateralMouseEnter(Sender: TObject);
+begin
+  ExpandirMenu();
+end;
+
+procedure TFrmMain.PnlLateralMouseLeave(Sender: TObject);
+begin
+  if not BExpandido and not MouseStillOverPanel then
+    ContrairMenu();
 end;
 
 procedure TFrmMain.BtnMenuClick(Sender: TObject);
@@ -126,12 +144,13 @@ procedure TFrmMain.BtnVendasClick(Sender: TObject);
 begin
   ContrairMenu();
   OpenTab(TFrmCadVenda, 'Vendas');
-end;
 
-procedure TFrmMain.BtnSairClick(Sender: TObject);
-begin
-  FecharFormulariosAbertos; // Fechar todos os formulários abertos nas abas
-  Close;
+  {if not Assigned(FrmCadVenda) then
+    FrmCadVenda := TFrmCadVenda.Create(Self);
+
+  FrmCadVenda.ShowModal;
+  FrmCadVenda.Free;
+  FrmCadVenda := nil;}
 end;
 
 procedure TFrmMain.ContrairMenu;
@@ -144,22 +163,16 @@ begin
   PnlLateral.Width := 137;
 end;
 
-function TFrmMain.MouseStillOverPanel: Boolean;
-var MousePos: TPoint;
+procedure TFrmMain.BtnFecharClick(Sender: TObject);
 begin
-  // Pega a posição atual do mouse
-  GetCursorPos(MousePos);
-  // Converte para as coordenadas relativas ao formulário
-  MousePos := ScreenToClient(MousePos);
-
-  // Verifica se o mouse ainda está sobre o painel lateral
-  Result := PtInRect(PnlLateral.BoundsRect, MousePos);
+  Close;
 end;
 
 procedure TFrmMain.OpenTab(const AFormClass: TFormClass; const ATabName: string);
-var TabSheet: TTabSheet;
-    NewForm: TForm;
-    i: Integer;
+var
+  TabSheet: TTabSheet;
+  NewForm: TForm;
+  i: Integer;
 begin
   // Verificar se a aba já existe
   for i := 0 to PageControlMain.PageCount - 1 do
@@ -183,23 +196,11 @@ begin
   NewForm.BorderStyle := bsNone;
   NewForm.Show;
 
-  // Associar o fechamento do formulário ao fechamento da aba
-  TabSheet.Tag := Integer(NewForm); // Usar a propriedade Tag para armazenar o formulário associado
-  NewForm.OnClose := FormCloseHandler; // Vincular o evento OnClose ao manipulador
+  // Armazenar o formulário no Tag da aba
+  TabSheet.Tag := Integer(NewForm); // Guardar a instância do formulário
 
   // Tornar a aba recém-criada ativa
   PageControlMain.ActivePage := TabSheet;
-end;
-
-procedure TFrmMain.PnlLateralMouseEnter(Sender: TObject);
-begin
-  ExpandirMenu();
-end;
-
-procedure TFrmMain.PnlLateralMouseLeave(Sender: TObject);
-begin
-  if not BExpandido and not MouseStillOverPanel then
-    ContrairMenu();
 end;
 
 procedure TFrmMain.FecharFormulariosAbertos;
@@ -235,6 +236,12 @@ begin
       TabSheet.Free;  // Liberar a aba
     end;
   end;
+end;
+
+procedure TFrmMain.BtnSairClick(Sender: TObject);
+begin
+  FecharFormulariosAbertos;
+  Close;
 end;
 
 end.
